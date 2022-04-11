@@ -1,6 +1,8 @@
 import {HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
 import { ethers } from "hardhat";
+import verifyContract from "../util/verifyContract";
+import { LOCAL_CHAINS } from "../util/deployerHelper";
 
 const deployGovernanceToken: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
@@ -16,6 +18,10 @@ const deployGovernanceToken: DeployFunction = async function (hre: HardhatRuntim
         //waitConfirmations
     })
     log(`Deployed Governance Token to Address: ${governanceToken.address}`)
+
+    if (!LOCAL_CHAINS.includes(network.name) && process.env.BSCSCAN_API) {
+        await verifyContract(governanceToken.address, [])
+    }
 
     await delegate(governanceToken.address, deployer);
 }

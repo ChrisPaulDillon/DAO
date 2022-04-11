@@ -5,10 +5,16 @@ import "hardhat-deploy";
 import "@nomiclabs/hardhat-ethers";
 import "@typechain/hardhat";
 import {HardhatUserConfig} from 'hardhat/config';
+import { config as dotenvConfig } from "dotenv";
+import { resolve } from "path";
 
-// module.exports = {
-//   solidity: "^0.8.0",
-// };
+dotenvConfig({ path: resolve(__dirname, "./.env") });
+
+// Ensure that we have all the environment variables we need.
+const mnemonic: string | undefined = process.env.MNEMONIC;
+if (!mnemonic) {
+  throw new Error("Please set your MNEMONIC in a .env file");
+}
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -32,6 +38,13 @@ const config: HardhatUserConfig = {
       gasPrice: 20000000000,
       accounts: {mnemonic: process.env.MNEMONIC}
     }
+  },
+  verify: {
+    etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://bscscan.com/
+    apiKey: process.env.BSCSCAN_API
+    }, 
   },
   namedAccounts: {
     deployer: {
